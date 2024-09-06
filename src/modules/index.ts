@@ -5,6 +5,11 @@ export const Layout = lazyLoad(
     (module) => module.Layout,
 );
 
+export const SignIn = lazyLoad(
+    () => import("./auth/Signin"),
+    (module) => module.Signin,
+);
+
 export const DashBoard = lazyLoad(
     () => import("./dashboard/views/DashBoard"),
     (module) => module.DashBoard,

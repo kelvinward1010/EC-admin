@@ -10,7 +10,7 @@ import {
     userUrl,
 } from "./urls";
 import { ErrorBoundaryPage } from "@/components/error/boundary-error";
-import { AddEditProduct, AddEditUser, DashBoard, Layout, Product, User } from "@/modules";
+import { AddEditProduct, AddEditUser, DashBoard, Layout, Product, SignIn, User } from "@/modules";
 
 interface RouteProps {
     children: React.ReactNode;
@@ -33,6 +33,10 @@ export const routerConfig = createBrowserRouter([
             </ProtectedRoute>
         ),
         children: [
+            {
+                path: signinUrl,
+                element: <SignIn />,
+            },
             {
                 path: layoutUrl,
                 element: <DashBoard />,

@@ -53,7 +53,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
             className={styles.containerLayout}
             logo={Logo}
             {...props}
-            title="Admin Base"
+            title="Ercomerce admin"
             layout={"mix"}
             menuItemRender={(menuItemProps, defaultDom) => {
                 if (
