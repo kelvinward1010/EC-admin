@@ -1,0 +1,18 @@
+.container {
+    height: auto;
+
+    .label_main {
+        font-size: 20px;
+        font-weight: 500;
+    }
+
+    .table_wrapper {
+        background-color: white;
+        margin-top: 20px;
+
+        .delected {
+            background-color: red;
+            color: white;
+        }
+    }
+}

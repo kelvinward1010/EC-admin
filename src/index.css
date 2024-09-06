@@ -1,0 +1,42 @@
+* {
+    margin: 0;
+}
+
+:root {
+    --noti-color-success: #12a594;
+    --noti-color-warning: #ee9d2b;
+    --noti-color-error: #e5484d;
+    --noti-color-info: #11181c;
+    --noti-color-export: #6e56cf;
+
+    --text-color-black: #11181c;
+    --text-color-blue: #006adc;
+    --text-color-pink: var(--noti-color-export);
+
+    --color-dark-black: #dfe3e6;
+
+    --background-pink: #f5f2ff;
+
+    --color-icon-green: #40c4aa;
+
+    --color-checked: #30a46c;
+    --color-cell-selected: #edf6ff;
+}
+
+/*table*/
+.tablemain
+    .ant-table-wrapper
+    .ant-table-tbody
+    .ant-table-row.ant-table-row-selected
+    > .ant-table-cell {
+    background: var(--color-cell-selected) !important;
+}
+
+.table_all ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 3px grey !important;
+}
+
+.tablemain th {
+    background: teal !important;
+    color: white !important;
+}

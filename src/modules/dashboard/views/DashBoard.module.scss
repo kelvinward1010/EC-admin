@@ -1,0 +1,27 @@
+.container {
+    .containerTotalSale {
+        background: rgb(243, 121, 87);
+    }
+
+    .containerTotalOrder {
+        background: rgb(252, 252, 159);
+    }
+
+    .containerTotalSold {
+        background: rgb(140, 240, 140);
+    }
+
+    .containerTotalCustomers {
+        background: rgb(242, 140, 242);
+    }
+
+    .box {
+        width: 25%;
+        min-width: 320px;
+        max-width: 375px;
+    }
+
+    .chartBox {
+        height: 100%;
+    }
+}

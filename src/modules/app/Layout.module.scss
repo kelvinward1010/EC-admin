@@ -1,0 +1,12 @@
+.containerLayout {
+    .containerHeader {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        margin-right: 10px;
+
+        .search {
+            width: 150px !important;
+        }
+    }
+}
