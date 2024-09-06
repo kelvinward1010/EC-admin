@@ -1,6 +1,5 @@
 import { Button, Form, Input, notification } from "antd";
 import styles from "./Signin.module.scss";
-import { useNavigate } from "react-router-dom";
 import { WarningOutlined } from "@ant-design/icons";
 import { RULES_LOGIN } from "./rules";
 
@@ -11,7 +10,7 @@ type FieldType = {
 };
 
 export function Signin(): JSX.Element {
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
 
     // const configLoginAccount = useLoginAccount({
     //     config: {
