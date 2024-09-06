@@ -1,4 +1,4 @@
-const storagePrefix = "admin_react_";
+const storagePrefix = "ec_admin_react_";
 
 const storage = {
     getToken: () => {
