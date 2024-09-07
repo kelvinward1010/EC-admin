@@ -13,7 +13,7 @@ type UseLoginAccountOptions = {
     config?: MutationConfig<typeof loginAccount>;
 };
 
-export const useLoginAccount = ({ config }: UseLoginAccountOptions) => {
+export const useLogin = ({ config }: UseLoginAccountOptions) => {
     return useMutation({
         onMutate: () => {},
         onError: () => {},

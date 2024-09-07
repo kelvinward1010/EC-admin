@@ -2,7 +2,13 @@ import { Button, Form, Input, notification } from "antd";
 import styles from "./Signin.module.scss";
 import { WarningOutlined } from "@ant-design/icons";
 import { RULES_LOGIN } from "./rules";
-
+import { useLogin } from "./apis/signin.api";
+import storage, { storageRefreshToken } from "@/utils/storage";
+import { AppDispatch } from "@/redux/store";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { loginAcc } from "@/redux/reducers/authSlice";
+import { layoutUrl } from "@/routes/urls";
 
 type FieldType = {
     email?: string;
@@ -10,38 +16,45 @@ type FieldType = {
 };
 
 export function Signin(): JSX.Element {
-    //const navigate = useNavigate();
+    const dispatch: AppDispatch = useDispatch();
+    const navigate = useNavigate();
 
-    // const configLoginAccount = useLoginAccount({
-    //     config: {
-    //         onSuccess: (res) => {
-    //             const data = res?.data;
-    //             notification.success({
-    //                 message: "Loged In!",
-    //             });
-    //             storage.setToken(data.access_token);
-    //             storageRefreshToken.setToken(data.refresh_token);
-    //             dispatch(
-    //                 loginAcc({
-    //                     user: data?.user,
-    //                 }),
-    //             );
-    //             navigate(-1);
-    //         },
-    //         onError: (e) => {
-    //             notification.error({
-    //                 message: e.response?.data?.detail,
-    //             });
-    //         },
-    //     },
-    // });
+    const configLoginAccount = useLogin({
+        config: {
+            onSuccess: (res) => {
+                const data = res?.data?.data;
+                if (data?.data?.isAdmin === true) {
+                    notification.success({
+                        message: "Loged In!",
+                    });
+                    storage.setToken(data.access_token);
+                    storageRefreshToken.setToken(data.refresh_token);
+                    dispatch(
+                        loginAcc({
+                            user: data?.data,
+                        }),
+                    );
+                    navigate(layoutUrl);
+                } else {
+                    notification.warning({
+                        message: "You don't have to sign in!",
+                    });
+                }
+            },
+            onError: (e) => {
+                notification.error({
+                    message: e.response?.data?.detail,
+                });
+            },
+        },
+    });
 
     const onFinish = (values: FieldType) => {
         const data = {
             email: values.email,
             password: values.password,
         };
-        console.log(data)
+        configLoginAccount.mutate(data);
     };
 
     const onFinishFailed = (errorInfo: any) => {

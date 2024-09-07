@@ -10,33 +10,48 @@ import {
     userUrl,
 } from "./urls";
 import { ErrorBoundaryPage } from "@/components/error/boundary-error";
-import { AddEditProduct, AddEditUser, DashBoard, Layout, Product, SignIn, User } from "@/modules";
+import {
+    AddEditProduct,
+    AddEditUser,
+    DashBoard,
+    Layout,
+    Product,
+    SignIn,
+    User,
+} from "@/modules";
+import { IUser } from "@/types/user";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 interface RouteProps {
     children: React.ReactNode;
 }
 
 const ProtectedRoute: React.FC<RouteProps> = ({ children }) => {
-    const user = true;
-    return user ? <>{children}</> : <Navigate to={signinUrl} replace />;
+    const user: IUser | null = useSelector(
+        (state: RootState) => state.auth.user,
+    );
+    return user === null ? (
+        <Navigate to={signinUrl} replace />
+    ) : (
+        <>{children}</>
+    );
 };
 
 export const routerConfig = createBrowserRouter([
     {
         path: layoutUrl,
-        element: <Layout />,
-        errorElement: (
+        element: (
             <ProtectedRoute>
-                <Layout>
-                    <ErrorBoundaryPage />
-                </Layout>
+                <Layout />
             </ProtectedRoute>
         ),
+        errorElement: (
+            <Layout>
+                <ErrorBoundaryPage />
+            </Layout>
+        ),
         children: [
-            {
-                path: signinUrl,
-                element: <SignIn />,
-            },
             {
                 path: layoutUrl,
                 element: <DashBoard />,
@@ -66,5 +81,10 @@ export const routerConfig = createBrowserRouter([
                 element: <AddEditProduct />,
             },
         ],
+    },
+    {
+        path: signinUrl,
+        element: <SignIn />,
+        errorElement: <ErrorBoundaryPage />,
     },
 ]);

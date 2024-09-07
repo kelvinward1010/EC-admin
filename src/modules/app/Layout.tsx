@@ -11,13 +11,12 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import { defaultMenus } from "./menus";
 import styles from "./Layout.module.scss";
 import "./index.css";
-import {
-    GithubFilled,
-    InfoCircleFilled,
-    LogoutOutlined,
-    QuestionCircleFilled,
-} from "@ant-design/icons";
-import { Dropdown, Input } from "antd";
+import { LogoutOutlined } from "@ant-design/icons";
+import { Dropdown, Input, notification } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
+import storage, { storageRefreshToken } from "@/utils/storage";
+import { logout } from "@/redux/reducers/authSlice";
 
 export type LayoutProps = {
     children?: React.ReactNode;
@@ -25,7 +24,10 @@ export type LayoutProps = {
 
 export const Layout: React.FC<LayoutProps> = (props) => {
     const { children } = props;
+    const dispatch: AppDispatch = useDispatch();
     const navigate = useNavigate();
+
+    const user: any = useSelector((state: RootState) => state.auth.user);
 
     const loopMenuItem = (menus: any[]): MenuDataItem[] =>
         menus.map(({ icon, routes, ...item }) => ({
@@ -35,9 +37,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
         }));
 
     const defaultFooterDom = (
-        <DefaultFooter
-            copyright={`${new Date().getFullYear()} Kelvin Ward`}
-        />
+        <DefaultFooter copyright={`${new Date().getFullYear()} Kelvin Ward`} />
     );
 
     const FormHeader = () => {
@@ -46,6 +46,15 @@ export const Layout: React.FC<LayoutProps> = (props) => {
                 <Input.Search className={styles.search} />
             </div>
         );
+    };
+
+    const handleLogout = () => {
+        storage.clearToken();
+        storageRefreshToken.clearToken();
+        dispatch(logout());
+        notification.success({
+            message: "Logged out",
+        });
     };
 
     return (
@@ -72,9 +81,11 @@ export const Layout: React.FC<LayoutProps> = (props) => {
                 request: async () => loopMenuItem(defaultMenus),
             }}
             avatarProps={{
-                src: "https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg",
+                src:
+                    user?.image ??
+                    "https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg",
                 size: "small",
-                title: "Kaito Kid",
+                title: user?.name,
                 render: (_, dom) => {
                     return (
                         <Dropdown
@@ -84,6 +95,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
                                         key: "logout",
                                         icon: <LogoutOutlined />,
                                         label: "Sign out",
+                                        onClick: () => handleLogout(),
                                     },
                                 ],
                             }}
@@ -92,15 +104,6 @@ export const Layout: React.FC<LayoutProps> = (props) => {
                         </Dropdown>
                     );
                 },
-            }}
-            actionsRender={(props) => {
-                if (props.isMobile) return [];
-                if (typeof window === "undefined") return [];
-                return [
-                    <InfoCircleFilled key="InfoCircleFilled" />,
-                    <QuestionCircleFilled key="QuestionCircleFilled" />,
-                    <GithubFilled key="GithubFilled" />,
-                ];
             }}
             breadcrumbRender={(routers = []) => [
                 {
