@@ -3,8 +3,8 @@ import styles from "./TableUser.module.scss";
 import { IUserTable } from "../types";
 import { TableProps } from "antd/lib";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useState } from "react";
 import { productUrl } from "@/routes/urls";
+import { useGetUsers } from "../apis/getUsers";
 
 type TableRowSelection<T> = TableProps<T>["rowSelection"];
 
@@ -42,7 +42,6 @@ function TableUser({ setUsersSelected }: TableUserProps) {
     const pageIndex = Number(searchParams.get("pageIndex")) || 1;
     const pageSize = Number(searchParams.get("pageSize")) || 20;
     const searchContent = searchParams.get("searchContent") || "";
-    const [data, setData] = useState<IUserTable[]>([]);
 
     const rowSelection: TableRowSelection<IUserTable> = {
         onChange: (_, selectedRows) => {
@@ -55,6 +54,15 @@ function TableUser({ setUsersSelected }: TableUserProps) {
         navigate(`${productUrl}/${id}`);
     };
 
+    const { data } = useGetUsers({
+        data: {
+            name: searchContent,
+        },
+        config: {},
+    });
+
+    console.log(data);
+
     return (
         <div className={styles.container}>
             <Table
@@ -63,7 +71,7 @@ function TableUser({ setUsersSelected }: TableUserProps) {
                 onRow={(record) => ({
                     onDoubleClick: () => handleGoEmployee(record?.key),
                 })}
-                dataSource={data}
+                dataSource={data?.data ?? []}
                 sticky
                 size={"small"}
                 scroll={{
@@ -72,7 +80,7 @@ function TableUser({ setUsersSelected }: TableUserProps) {
                 }}
                 className={"tablemain table_all"}
                 pagination={{
-                    total: data.length,
+                    total: data?.data?.length,
                     showSizeChanger: true,
                     showQuickJumper: true,
                     showTotal: (total) => `Total ${total} items`,
