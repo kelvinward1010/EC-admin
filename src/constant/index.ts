@@ -12,3 +12,4 @@ export const URL_GETUSERS = `${URL_USER}/search`;
 export const URL_CREATEUSER = `${URL_USER}/create`;
 export const URL_GETUSER = `${URL_USER}/detail`;
 export const URL_UPDATEUSER = `${URL_USER}`;
+export const URL_DELETEUSER = `${URL_USER}/delete`;

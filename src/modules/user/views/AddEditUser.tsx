@@ -1,8 +1,18 @@
-import { Flex, Form, Image, Input, Typography } from "antd";
+import {
+    Flex,
+    Form,
+    Image,
+    Input,
+    notification,
+    Radio,
+    Typography,
+} from "antd";
 import styles from "./AddEditUser.module.scss";
 import { ChangeEvent, useCallback, useRef, useState } from "react";
 import { ButtonConfig } from "@/components/buttonconfig";
 import { UploadOutlined } from "@ant-design/icons";
+import { useParams } from "react-router-dom";
+import { useGetUser } from "../apis/getUser";
 
 const { Text } = Typography;
 
@@ -12,13 +22,14 @@ type FieldType = {
     position?: string;
     password?: string;
     confirmPassword?: string;
+    isAdmin?: boolean;
 };
 
 export function AddEditUser() {
     const [formAddEditUser] = Form.useForm();
     const [image, setImage] = useState<any>();
     const fileInputRef = useRef<HTMLInputElement>(null);
-
+    const id = useParams()?.id;
     const formLabel = (value: string) => <Text strong>{value}</Text>;
 
     const handleChangeInputImage = (e: ChangeEvent<HTMLInputElement>) => {
@@ -50,12 +61,31 @@ export function AddEditUser() {
                 email: values.email,
                 password: values.password,
                 image: image,
-                position: values.position,
+                isAdmin: values.isAdmin,
             };
             console.log(draftData);
         },
         [image],
     );
+
+    {
+        id &&
+            useGetUser({
+                data: {
+                    id: id,
+                },
+                config: {
+                    onSuccess: (res) => {
+                        formAddEditUser.setFieldsValue(res?.data);
+                    },
+                    onError: (e: any) => {
+                        notification.error({
+                            message: e?.response?.data?.detail,
+                        });
+                    },
+                },
+            });
+    }
 
     return (
         <div className={styles.container}>
@@ -171,10 +201,14 @@ export function AddEditUser() {
                 </Form.Item>
 
                 <Form.Item<FieldType>
-                    label={formLabel("Position")}
-                    name="position"
+                    label={formLabel("IsAdmin")}
+                    name="isAdmin"
+                    initialValue={false}
                 >
-                    <Input />
+                    <Radio.Group>
+                        <Radio value={true}>True</Radio>
+                        <Radio value={false}>False</Radio>
+                    </Radio.Group>
                 </Form.Item>
             </Form>
         </div>

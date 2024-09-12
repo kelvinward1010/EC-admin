@@ -1,36 +1,29 @@
-import { Table, TableColumnsType } from "antd";
+import {
+    Image,
+    notification,
+    Row,
+    Table,
+    TableColumnsType,
+    Typography,
+} from "antd";
 import styles from "./TableUser.module.scss";
 import { IUserTable } from "../types";
 import { TableProps } from "antd/lib";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { productUrl } from "@/routes/urls";
+import { userUrl } from "@/routes/urls";
 import { useGetUsers } from "../apis/getUsers";
+import { addKeyField } from "@/utils/data";
+import { ButtonConfig } from "@/components/buttonconfig";
+import { DeleteFilled, EditFilled } from "@ant-design/icons";
+import { useState } from "react";
+import { ModalSmall } from "@/components/modals/modalSmall";
+import { IUser } from "@/types/user";
+import { useDeleteUser } from "../apis/deleteUser";
+import { queryClient } from "@/lib/react-query";
+
+const { Text } = Typography;
 
 type TableRowSelection<T> = TableProps<T>["rowSelection"];
-
-const columns: TableColumnsType<IUserTable> = [
-    {
-        title: "STT",
-        width: "5%",
-    },
-    {
-        title: "ID",
-        dataIndex: "_id",
-        width: "18%",
-    },
-    {
-        title: "Name",
-        dataIndex: "name",
-    },
-    {
-        title: "Email",
-        dataIndex: "email",
-    },
-    {
-        title: "Actions",
-        width: "10%",
-    },
-];
 
 interface TableUserProps {
     setUsersSelected: (vl: IUserTable[]) => void;
@@ -39,6 +32,8 @@ interface TableUserProps {
 function TableUser({ setUsersSelected }: TableUserProps) {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
+    const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
+    const [user, setUser] = useState<IUser>();
     const pageIndex = Number(searchParams.get("pageIndex")) || 1;
     const pageSize = Number(searchParams.get("pageSize")) || 20;
     const searchContent = searchParams.get("searchContent") || "";
@@ -50,28 +45,115 @@ function TableUser({ setUsersSelected }: TableUserProps) {
         onSelectAll: (_, __, ___) => {},
     };
 
-    const handleGoEmployee = (id: string) => {
-        navigate(`${productUrl}/${id}`);
+    const handleGoUser = (id: string) => {
+        navigate(`${userUrl}/${id}`);
     };
 
-    const { data } = useGetUsers({
+    const columns: TableColumnsType<IUserTable> = [
+        {
+            title: "STT",
+            width: "5%",
+            align: "center",
+            render: (_, __, index) => <Text>{++index}</Text>,
+        },
+        {
+            title: "ID",
+            dataIndex: "_id",
+            width: "18%",
+        },
+        {
+            title: "Name",
+            dataIndex: "name",
+            width: "auto",
+        },
+        {
+            title: "Email",
+            dataIndex: "email",
+        },
+        {
+            title: "IsAdmin",
+            dataIndex: "isAdmin",
+            render: (_: any, record: any) => {
+                return <Text>{String(record?.isAdmin)}</Text>;
+            },
+        },
+        {
+            title: "Image",
+            dataIndex: "image",
+            align: "center",
+            render: (_: any, record: any) => {
+                return <Image src={record?.image} />;
+            },
+        },
+        {
+            title: "Actions",
+            width: "10%",
+            render: (_: any, record: any) => {
+                return (
+                    <Row justify={"space-evenly"} key={record?._id}>
+                        <ButtonConfig
+                            icon={<EditFilled />}
+                            onClick={() => handleGoUser(record?._id)}
+                        />
+                        <ButtonConfig
+                            icon={<DeleteFilled />}
+                            onClick={() => {
+                                setUser(record);
+                                setOpenModalDelete(true);
+                            }}
+                        />
+                    </Row>
+                );
+            },
+        },
+    ];
+
+    const { data, isLoading } = useGetUsers({
         data: {
             name: searchContent,
         },
         config: {},
     });
 
-    console.log(data);
+    const configDeleteUser = useDeleteUser({
+        config: {
+            onSuccess: () => {
+                notification.error({
+                    message: "Delete user",
+                });
+                queryClient.invalidateQueries(["get-users"]);
+                setOpenModalDelete(false);
+            },
+            onError: (e) => {
+                notification.error({
+                    message: e?.response?.data?.detail,
+                });
+            },
+        },
+    });
+
+    const handleDeletePost = () => {
+        configDeleteUser.mutate({ id: user?._id });
+    };
 
     return (
         <div className={styles.container}>
+            {openModalDelete && user?._id && (
+                <ModalSmall
+                    message={`Do you want to delete ${user?.name} !`}
+                    open={openModalDelete}
+                    setOpen={setOpenModalDelete}
+                    onClick={handleDeletePost}
+                    titleButton={"Delete"}
+                />
+            )}
             <Table
                 rowSelection={rowSelection}
                 columns={columns}
                 onRow={(record) => ({
-                    onDoubleClick: () => handleGoEmployee(record?.key),
+                    onDoubleClick: () => handleGoUser(record?.key),
                 })}
-                dataSource={data?.data ?? []}
+                dataSource={addKeyField(data?.data) ?? []}
                 sticky
                 size={"small"}
                 scroll={{
@@ -93,7 +175,7 @@ function TableUser({ setUsersSelected }: TableUserProps) {
                         setSearchParams(searchParams);
                     },
                 }}
-                loading={false}
+                loading={isLoading}
             />
         </div>
     );

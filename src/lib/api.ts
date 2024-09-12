@@ -29,6 +29,7 @@ apiClient.interceptors.response.use(
             try {
                 // Gọi API để lấy token mới
                 const refreshtoken = storageRefreshToken.getToken();
+
                 const draftData = {
                     refresh_token: refreshtoken,
                 };
@@ -36,7 +37,8 @@ apiClient.interceptors.response.use(
                     `${URL_API_REFRESHTOKEN}`,
                     draftData,
                 );
-                const newToken = refreshTokenResponse.data?.data?.token;
+
+                const newToken = refreshTokenResponse.data?.access_token;
 
                 // Lưu token mới vào local storage
                 storage.setToken(newToken);

@@ -1,0 +1,23 @@
+.containerModalWarning {
+    height: auto;
+    max-height: 300px;
+
+    .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        width: 100%;
+        text-align: center;
+
+        .message {
+            margin: 10px 0;
+        }
+
+        .button {
+            background-color: teal;
+            color: white;
+            border: none;
+        }
+    }
+}
