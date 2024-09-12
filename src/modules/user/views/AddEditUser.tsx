@@ -11,8 +11,12 @@ import styles from "./AddEditUser.module.scss";
 import { ChangeEvent, useCallback, useRef, useState } from "react";
 import { ButtonConfig } from "@/components/buttonconfig";
 import { UploadOutlined } from "@ant-design/icons";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGetUser } from "../apis/getUser";
+import { useUpdateUser } from "../apis/updateUser";
+import { queryClient } from "@/lib/react-query";
+import { userUrl } from "@/routes/urls";
+import { useCreateUser } from "../apis/createUser";
 
 const { Text } = Typography;
 
@@ -26,6 +30,7 @@ type FieldType = {
 };
 
 export function AddEditUser() {
+    const navigate = useNavigate();
     const [formAddEditUser] = Form.useForm();
     const [image, setImage] = useState<any>();
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -53,17 +58,61 @@ export function AddEditUser() {
         setImage("");
     };
 
+    const configUpdateUser = useUpdateUser({
+        config: {
+            onSuccess: () => {
+                notification.success({
+                    message: "Updated user",
+                });
+                queryClient.invalidateQueries(["get-users"]);
+                navigate(userUrl);
+            },
+            onError: (e) => {
+                notification.error({
+                    message: e?.response?.data?.detail,
+                });
+            },
+        },
+    });
+
+    const configCreateUser = useCreateUser({
+        config: {
+            onSuccess: () => {
+                notification.success({
+                    message: "Created user",
+                });
+                queryClient.invalidateQueries(["get-users"]);
+                navigate(userUrl);
+            },
+            onError: (e) => {
+                notification.error({
+                    message: e?.response?.data?.detail,
+                });
+            },
+        },
+    });
+
     const onFinish = useCallback(
         (values: FieldType) => {
-            const draftData = {
-                id: "??",
+            const draftDataUpdate = {
+                id: id,
+                name: values.name,
+                email: values.email,
+                image: image,
+                isAdmin: values.isAdmin,
+            };
+            const draftDataCreate = {
                 name: values.name,
                 email: values.email,
                 password: values.password,
                 image: image,
                 isAdmin: values.isAdmin,
             };
-            console.log(draftData);
+            if (id) {
+                configUpdateUser.mutate(draftDataUpdate);
+            } else {
+                configCreateUser.mutate(draftDataCreate);
+            }
         },
         [image],
     );
@@ -157,48 +206,52 @@ export function AddEditUser() {
                     <Input />
                 </Form.Item>
 
-                <Form.Item<FieldType>
-                    label={formLabel("Password")}
-                    name="password"
-                    rules={[
-                        {
-                            required: true,
-                            message: "Please input your password!",
-                        },
-                    ]}
-                >
-                    <Input.Password />
-                </Form.Item>
+                {!id && (
+                    <>
+                        <Form.Item<FieldType>
+                            label={formLabel("Password")}
+                            name="password"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please input your password!",
+                                },
+                            ]}
+                        >
+                            <Input.Password />
+                        </Form.Item>
 
-                <Form.Item<FieldType>
-                    name="confirmPassword"
-                    label="Confirm Password"
-                    dependencies={["password"]}
-                    hasFeedback
-                    rules={[
-                        {
-                            required: true,
-                            message: "Please confirm your password!",
-                        },
-                        ({ getFieldValue }) => ({
-                            validator(_, value) {
-                                if (
-                                    !value ||
-                                    getFieldValue("password") === value
-                                ) {
-                                    return Promise.resolve();
-                                }
-                                return Promise.reject(
-                                    new Error(
-                                        "The new password that you entered do not match!",
-                                    ),
-                                );
-                            },
-                        }),
-                    ]}
-                >
-                    <Input.Password />
-                </Form.Item>
+                        <Form.Item<FieldType>
+                            name="confirmPassword"
+                            label="Confirm Password"
+                            dependencies={["password"]}
+                            hasFeedback
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please confirm your password!",
+                                },
+                                ({ getFieldValue }) => ({
+                                    validator(_, value) {
+                                        if (
+                                            !value ||
+                                            getFieldValue("password") === value
+                                        ) {
+                                            return Promise.resolve();
+                                        }
+                                        return Promise.reject(
+                                            new Error(
+                                                "The new password that you entered do not match!",
+                                            ),
+                                        );
+                                    },
+                                }),
+                            ]}
+                        >
+                            <Input.Password />
+                        </Form.Item>
+                    </>
+                )}
 
                 <Form.Item<FieldType>
                     label={formLabel("IsAdmin")}

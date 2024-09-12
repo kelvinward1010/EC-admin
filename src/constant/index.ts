@@ -13,3 +13,11 @@ export const URL_CREATEUSER = `${URL_USER}/create`;
 export const URL_GETUSER = `${URL_USER}/detail`;
 export const URL_UPDATEUSER = `${URL_USER}`;
 export const URL_DELETEUSER = `${URL_USER}/delete`;
+
+//Product
+export const URL_PRODUCT = "product";
+export const URL_GETPRODUCTS = `${URL_PRODUCT}/search`;
+export const URL_CREATEPRODUCT = `${URL_USER}/create`;
+export const URL_GETPRODUCT = `${URL_USER}/detail`;
+export const URL_UPDATEPRODUCT = `${URL_USER}/update`;
+export const URL_DELETEPRODUCT = `${URL_USER}/delete`;

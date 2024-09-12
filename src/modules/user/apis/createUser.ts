@@ -8,6 +8,7 @@ export interface CreateUserProps {
     email?: string;
     password?: string;
     image?: string;
+    isAdmin?: boolean;
 }
 
 export const createUser = async (data: CreateUserProps): Promise<any> => {

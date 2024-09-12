@@ -26,7 +26,7 @@ type UseUpdateUserOptions = {
     config?: MutationConfig<typeof updateUser>;
 };
 
-export const useUpdateAccount = ({ config }: UseUpdateUserOptions) => {
+export const useUpdateUser = ({ config }: UseUpdateUserOptions) => {
     return useMutation({
         onMutate: () => {},
         onError: () => {},
