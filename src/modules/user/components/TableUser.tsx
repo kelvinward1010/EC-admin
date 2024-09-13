@@ -1,5 +1,5 @@
 import {
-    Image,
+    Avatar,
     notification,
     Row,
     Table,
@@ -82,7 +82,7 @@ function TableUser({ setUsersSelected }: TableUserProps) {
             dataIndex: "image",
             align: "center",
             render: (_: any, record: any) => {
-                return <Image src={record?.image} />;
+                return <Avatar src={record?.image} />;
             },
         },
         {
@@ -119,7 +119,7 @@ function TableUser({ setUsersSelected }: TableUserProps) {
         config: {
             onSuccess: () => {
                 notification.error({
-                    message: "Delete user",
+                    message: "Deleted user",
                 });
                 queryClient.invalidateQueries(["get-users"]);
                 setOpenModalDelete(false);

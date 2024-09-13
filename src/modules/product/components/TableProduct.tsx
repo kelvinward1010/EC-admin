@@ -1,40 +1,29 @@
-import { Table, TableColumnsType } from "antd";
+import {
+    Image,
+    notification,
+    Row,
+    Table,
+    TableColumnsType,
+    Typography,
+} from "antd";
 import styles from "./TableProduct.module.scss";
 import { TableProps } from "antd/lib";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useState } from "react";
 import { productUrl } from "@/routes/urls";
 import { IProductTable } from "../types";
+import { useGetProducts } from "../apis/getProducts";
+import { addKeyField } from "@/utils/data";
+import { ButtonConfig } from "@/components/buttonconfig";
+import { DeleteFilled, EditFilled } from "@ant-design/icons";
+import { useState } from "react";
+import { IProduct } from "@/types/product";
+import { ModalSmall } from "@/components/modals/modalSmall";
+import { useDeleteProduct } from "../apis/deleteProduct";
+import { queryClient } from "@/lib/react-query";
+
+const { Text } = Typography;
 
 type TableRowSelection<T> = TableProps<T>["rowSelection"];
-
-const columns: TableColumnsType<IProductTable> = [
-    {
-        title: "STT",
-        width: "5%",
-    },
-    {
-        title: "ID",
-        dataIndex: "_id",
-        width: "18%",
-    },
-    {
-        title: "Name",
-        dataIndex: "name",
-    },
-    {
-        title: "Desciption",
-        dataIndex: "description",
-    },
-    {
-        title: "Price",
-        dataIndex: "price",
-    },
-    {
-        title: "Actions",
-        width: "10%",
-    },
-];
 
 interface TableProductProps {
     setUsersSelected: (vl: IProductTable[]) => void;
@@ -43,10 +32,12 @@ interface TableProductProps {
 function TableProduct({ setUsersSelected }: TableProductProps) {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
+    const [openModalDeleteProduct, setOpenModalDeleteProduct] =
+        useState<boolean>(false);
+    const [product, setProduct] = useState<IProduct>();
     const pageIndex = Number(searchParams.get("pageIndex")) || 1;
     const pageSize = Number(searchParams.get("pageSize")) || 20;
     const searchContent = searchParams.get("searchContent") || "";
-    const [data, setData] = useState<IProductTable[]>([]);
 
     const rowSelection: TableRowSelection<IProductTable> = {
         onChange: (_, selectedRows) => {
@@ -55,19 +46,119 @@ function TableProduct({ setUsersSelected }: TableProductProps) {
         onSelectAll: (_, __, ___) => {},
     };
 
-    const handleGoEmployee = (id: string) => {
+    const handleGoProduct = (id: string) => {
         navigate(`${productUrl}/${id}`);
+    };
+
+    const columns: TableColumnsType<IProductTable> = [
+        {
+            title: "STT",
+            width: "5%",
+            align: "center",
+            render: (_, __, index) => <Text>{++index}</Text>,
+        },
+        {
+            title: "ID",
+            dataIndex: "_id",
+            width: "18%",
+        },
+        {
+            title: "Name",
+            dataIndex: "name",
+        },
+        {
+            title: "Image",
+            dataIndex: "image",
+            align: "center",
+            render: (_: any, record: any) => {
+                return <Image src={record?.image} />;
+            },
+        },
+        {
+            title: "Desciption",
+            dataIndex: "description",
+        },
+        {
+            title: "Quantity",
+            dataIndex: "quantity",
+        },
+        {
+            title: "Price",
+            dataIndex: "price",
+        },
+        {
+            title: "Type",
+            dataIndex: "type",
+        },
+        {
+            title: "Actions",
+            width: "10%",
+            render: (_: any, record: any) => {
+                return (
+                    <Row justify={"space-evenly"} key={record?._id}>
+                        <ButtonConfig
+                            icon={<EditFilled />}
+                            onClick={() => handleGoProduct(record?._id)}
+                        />
+                        <ButtonConfig
+                            icon={<DeleteFilled />}
+                            onClick={() => {
+                                setProduct(record);
+                                setOpenModalDeleteProduct(true);
+                            }}
+                        />
+                    </Row>
+                );
+            },
+        },
+    ];
+
+    const { data, isLoading } = useGetProducts({
+        data: {
+            name: searchContent,
+        },
+        config: {},
+    });
+
+    const configDeleteUser = useDeleteProduct({
+        config: {
+            onSuccess: () => {
+                notification.error({
+                    message: "Deleted product",
+                });
+                queryClient.invalidateQueries(["get-products"]);
+                setOpenModalDeleteProduct(false);
+            },
+            onError: (e) => {
+                notification.error({
+                    message: e?.response?.data?.detail,
+                });
+            },
+        },
+    });
+
+    const handleDeleteProduct = () => {
+        configDeleteUser.mutate({ id: product?._id });
     };
 
     return (
         <div className={styles.container}>
+            {openModalDeleteProduct && product?._id && (
+                <ModalSmall
+                    message={`Do you want to delete ${product?.name} !`}
+                    open={openModalDeleteProduct}
+                    setOpen={setOpenModalDeleteProduct}
+                    onClick={handleDeleteProduct}
+                    titleButton={"Delete"}
+                />
+            )}
             <Table
                 rowSelection={rowSelection}
                 columns={columns}
                 onRow={(record) => ({
-                    onDoubleClick: () => handleGoEmployee(record?.key),
+                    onDoubleClick: () => handleGoProduct(record?.key),
                 })}
-                dataSource={data}
+                dataSource={addKeyField(data?.data) ?? []}
                 sticky
                 size={"small"}
                 scroll={{
@@ -76,7 +167,7 @@ function TableProduct({ setUsersSelected }: TableProductProps) {
                 }}
                 className={"tablemain table_all"}
                 pagination={{
-                    total: data.length,
+                    total: data?.data?.length,
                     showSizeChanger: true,
                     showQuickJumper: true,
                     showTotal: (total) => `Total ${total} items`,
@@ -89,7 +180,7 @@ function TableProduct({ setUsersSelected }: TableProductProps) {
                         setSearchParams(searchParams);
                     },
                 }}
-                loading={false}
+                loading={isLoading}
             />
         </div>
     );

@@ -6,7 +6,7 @@ import { useQuery } from "react-query";
 
 interface getUsersProps {
     name?: string;
-    type?: string;
+    email?: string;
     isAdmin?: boolean;
 }
 
@@ -18,12 +18,12 @@ export const searchUsers = async (data: getUsersProps): Promise<any> => {
 
 type QueryFnType = typeof searchUsers;
 
-type UsesearchPostsOptions = {
+type UseSearchPostsOptions = {
     data: getUsersProps;
     config?: QueryConfig<QueryFnType>;
 };
 
-export const useGetUsers = ({ data, config }: UsesearchPostsOptions) => {
+export const useGetUsers = ({ data, config }: UseSearchPostsOptions) => {
     return useQuery<ExtractFnReturnType<QueryFnType>>({
         onError: () => {},
         onSuccess: () => {},

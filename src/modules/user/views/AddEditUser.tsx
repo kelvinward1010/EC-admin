@@ -126,6 +126,7 @@ export function AddEditUser() {
                 config: {
                     onSuccess: (res) => {
                         formAddEditUser.setFieldsValue(res?.data);
+                        setImage(res?.data?.image);
                     },
                     onError: (e: any) => {
                         notification.error({

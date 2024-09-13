@@ -17,7 +17,7 @@ export const URL_DELETEUSER = `${URL_USER}/delete`;
 //Product
 export const URL_PRODUCT = "product";
 export const URL_GETPRODUCTS = `${URL_PRODUCT}/search`;
-export const URL_CREATEPRODUCT = `${URL_USER}/create`;
-export const URL_GETPRODUCT = `${URL_USER}/detail`;
-export const URL_UPDATEPRODUCT = `${URL_USER}/update`;
-export const URL_DELETEPRODUCT = `${URL_USER}/delete`;
+export const URL_CREATEPRODUCT = `${URL_PRODUCT}/create`;
+export const URL_GETPRODUCT = `${URL_PRODUCT}/detail`;
+export const URL_UPDATEPRODUCT = `${URL_PRODUCT}/update`;
+export const URL_DELETEPRODUCT = `${URL_PRODUCT}/delete`;

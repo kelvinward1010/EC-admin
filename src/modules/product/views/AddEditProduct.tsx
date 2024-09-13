@@ -1,8 +1,23 @@
-import { Flex, Form, Image, Input, Typography } from "antd";
+import {
+    Flex,
+    Form,
+    Image,
+    Input,
+    notification,
+    Select,
+    Typography,
+} from "antd";
 import styles from "./AddEditProduct.module.scss";
 import { ChangeEvent, useCallback, useRef, useState } from "react";
 import { ButtonConfig } from "@/components/buttonconfig";
 import { UploadOutlined } from "@ant-design/icons";
+import { TYPESPRODUCTS } from "@/constant/config";
+import { useNavigate, useParams } from "react-router-dom";
+import { useUpdateProduct } from "../apis/updateProduct";
+import { queryClient } from "@/lib/react-query";
+import { productUrl } from "@/routes/urls";
+import { useCreateProduct } from "../apis/createProduct";
+import { useGetProduct } from "../apis/getProduct";
 
 const { Text } = Typography;
 
@@ -10,14 +25,18 @@ type FieldType = {
     name?: string;
     image?: string;
     description?: string;
-    price?: string;
+    quantity?: number;
+    price?: number;
+    type?: string;
 };
 
 export function AddEditProduct() {
+    const navigate = useNavigate();
     const [formAddEditProduct] = Form.useForm();
     const [image, setImage] = useState<any>();
+    const [appreciationfromaoi, setAppreciationfromapi] = useState<any[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
-
+    const id = useParams()?.id;
     const formLabel = (value: string) => <Text strong>{value}</Text>;
 
     const handleChangeInputImage = (e: ChangeEvent<HTMLInputElement>) => {
@@ -41,19 +60,89 @@ export function AddEditProduct() {
         setImage("");
     };
 
+    const configUpdateProduct = useUpdateProduct({
+        config: {
+            onSuccess: () => {
+                notification.success({
+                    message: "Updated product",
+                });
+                queryClient.invalidateQueries(["get-products"]);
+                navigate(productUrl);
+            },
+            onError: (e) => {
+                notification.error({
+                    message: e?.message,
+                });
+            },
+        },
+    });
+
+    const configCreateProduct = useCreateProduct({
+        config: {
+            onSuccess: () => {
+                notification.success({
+                    message: "Created product",
+                });
+                queryClient.invalidateQueries(["get-products"]);
+                navigate(productUrl);
+            },
+            onError: (e) => {
+                notification.error({
+                    message: e?.message,
+                });
+            },
+        },
+    });
+
     const onFinish = useCallback(
         (values: FieldType) => {
-            const draftData = {
-                id: "??",
+            const draftDataUpdate = {
+                id: id,
                 name: values.name,
-                image: values.image,
-                password: values.description,
-                price: values.price,
+                image: image,
+                description: values.description,
+                quantity: Number(values.quantity),
+                price: Number(values.price),
+                type: values.type,
+                appreciation: appreciationfromaoi,
             };
-            console.log(draftData);
+            const draftDataCreate = {
+                name: values.name,
+                image: image ?? "",
+                description: values.description,
+                quantity: Number(values.quantity),
+                price: Number(values.price),
+                type: values.type,
+                appreciation: [],
+            };
+            if (id) {
+                configUpdateProduct.mutate(draftDataUpdate);
+            } else {
+                configCreateProduct.mutate(draftDataCreate);
+            }
         },
         [image],
     );
+
+    {
+        id &&
+            useGetProduct({
+                data: {
+                    id: id,
+                },
+                config: {
+                    onSuccess: (res) => {
+                        formAddEditProduct.setFieldsValue(res?.data);
+                        setAppreciationfromapi(res?.data?.appreciation);
+                    },
+                    onError: (e: any) => {
+                        notification.error({
+                            message: e?.response?.data?.detail,
+                        });
+                    },
+                },
+            });
+    }
 
     return (
         <div className={styles.container}>
@@ -129,6 +218,19 @@ export function AddEditProduct() {
                 </Form.Item>
 
                 <Form.Item<FieldType>
+                    label={formLabel("Quantity")}
+                    name={"quantity"}
+                    rules={[
+                        {
+                            required: true,
+                            message: "Please input your quantity!",
+                        },
+                    ]}
+                >
+                    <Input />
+                </Form.Item>
+
+                <Form.Item<FieldType>
                     label={formLabel("Price")}
                     name={"price"}
                     rules={[
@@ -136,6 +238,19 @@ export function AddEditProduct() {
                     ]}
                 >
                     <Input />
+                </Form.Item>
+
+                <Form.Item<FieldType>
+                    label={formLabel("Type")}
+                    name={"type"}
+                    initialValue={"Fashion"}
+                >
+                    <Select
+                        allowClear
+                        style={{ width: "100%" }}
+                        placeholder="Select type"
+                        options={TYPESPRODUCTS}
+                    />
                 </Form.Item>
             </Form>
         </div>
