@@ -157,7 +157,7 @@ function TableUser({ setUsersSelected }: TableUserProps) {
                 sticky
                 size={"small"}
                 scroll={{
-                    y: 450,
+                    y: 500,
                     x: 1300,
                 }}
                 className={"tablemain table_all"}
