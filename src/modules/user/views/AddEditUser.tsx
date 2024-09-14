@@ -1,10 +1,13 @@
 import {
+    Col,
     Flex,
     Form,
     Image,
     Input,
     notification,
     Radio,
+    Row,
+    Select,
     Typography,
 } from "antd";
 import styles from "./AddEditUser.module.scss";
@@ -17,16 +20,19 @@ import { useUpdateUser } from "../apis/updateUser";
 import { queryClient } from "@/lib/react-query";
 import { userUrl } from "@/routes/urls";
 import { useCreateUser } from "../apis/createUser";
+import { TYPESIMAGES } from "@/constant/config";
 
 const { Text } = Typography;
 
 type FieldType = {
     name?: string;
     email?: string;
+    image?: string;
     position?: string;
     password?: string;
     confirmPassword?: string;
     isAdmin?: boolean;
+    typeupload?: string;
 };
 
 export function AddEditUser() {
@@ -36,6 +42,7 @@ export function AddEditUser() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const id = useParams()?.id;
     const formLabel = (value: string) => <Text strong>{value}</Text>;
+    const typeuploadImg = Form.useWatch("typeupload", formAddEditUser);
 
     const handleChangeInputImage = (e: ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
@@ -98,14 +105,19 @@ export function AddEditUser() {
                 id: id,
                 name: values.name,
                 email: values.email,
-                image: image,
+                image:
+                    image && typeuploadImg === "Upload"
+                        ? image
+                        : values.image && typeuploadImg === "Link URL"
+                          ? values.image
+                          : "",
                 isAdmin: values.isAdmin,
             };
             const draftDataCreate = {
                 name: values.name,
                 email: values.email,
                 password: values.password,
-                image: image,
+                image: typeuploadImg === "Upload" ? image : values.image,
                 isAdmin: values.isAdmin,
             };
             if (id) {
@@ -144,7 +156,7 @@ export function AddEditUser() {
                 name="addedituser"
                 scrollToFirstError
                 style={{ paddingBlock: 32, width: "100%" }}
-                labelCol={{ span: 5 }}
+                labelCol={{ span: 10 }}
                 wrapperCol={{ span: 24 }}
                 initialValues={{ remember: true }}
                 onFinish={onFinish}
@@ -165,29 +177,57 @@ export function AddEditUser() {
                         />
                     </Flex>
                 </Form.Item>
-                <Form.Item label={formLabel("Image")}>
-                    <ButtonConfig
-                        icon={<UploadOutlined />}
-                        iconPosition={"start"}
-                        onClick={handleButtonClick}
-                        lable={"Click to upload"}
-                    >
-                        <input
-                            style={{ display: "none" }}
-                            ref={fileInputRef}
-                            accept="image/*"
-                            type={"file"}
-                            onChange={handleChangeInputImage}
-                        />
-                    </ButtonConfig>
-                    {image && (
-                        <Image
-                            width={200}
-                            src={image}
-                            style={{ margin: "0 0 0 10px" }}
-                        />
-                    )}
-                </Form.Item>
+                <Row justify={"space-between"}>
+                    <Col span={15}>
+                        {typeuploadImg === "Upload" ? (
+                            <Form.Item label={formLabel("Image")}>
+                                <ButtonConfig
+                                    icon={<UploadOutlined />}
+                                    iconPosition={"start"}
+                                    onClick={handleButtonClick}
+                                    lable={"Click to upload"}
+                                >
+                                    <input
+                                        style={{ display: "none" }}
+                                        ref={fileInputRef}
+                                        accept="image/*"
+                                        type={"file"}
+                                        onChange={handleChangeInputImage}
+                                    />
+                                </ButtonConfig>
+                                {image && (
+                                    <Image
+                                        width={200}
+                                        src={image}
+                                        style={{ margin: "0 0 0 10px" }}
+                                    />
+                                )}
+                            </Form.Item>
+                        ) : (
+                            <Form.Item<FieldType>
+                                label={formLabel("Link URL Image")}
+                                name="image"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please input link URL!",
+                                    },
+                                ]}
+                            >
+                                <Input />
+                            </Form.Item>
+                        )}
+                    </Col>
+                    <Col span={7}>
+                        <Form.Item<FieldType>
+                            label={formLabel("Type Upload")}
+                            name={"typeupload"}
+                            initialValue={"Upload"}
+                        >
+                            <Select allowClear options={TYPESIMAGES} />
+                        </Form.Item>
+                    </Col>
+                </Row>
                 <Form.Item<FieldType>
                     label={formLabel("Name")}
                     name="name"

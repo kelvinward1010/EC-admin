@@ -1,9 +1,11 @@
 import {
+    Col,
     Flex,
     Form,
     Image,
     Input,
     notification,
+    Row,
     Select,
     Typography,
 } from "antd";
@@ -11,7 +13,7 @@ import styles from "./AddEditProduct.module.scss";
 import { ChangeEvent, useCallback, useRef, useState } from "react";
 import { ButtonConfig } from "@/components/buttonconfig";
 import { UploadOutlined } from "@ant-design/icons";
-import { TYPESPRODUCTS } from "@/constant/config";
+import { TYPESIMAGES, TYPESPRODUCTS } from "@/constant/config";
 import { useNavigate, useParams } from "react-router-dom";
 import { useUpdateProduct } from "../apis/updateProduct";
 import { queryClient } from "@/lib/react-query";
@@ -28,6 +30,7 @@ type FieldType = {
     quantity?: number;
     price?: number;
     type?: string;
+    typeupload?: string;
 };
 
 export function AddEditProduct() {
@@ -38,6 +41,7 @@ export function AddEditProduct() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const id = useParams()?.id;
     const formLabel = (value: string) => <Text strong>{value}</Text>;
+    const typeuploadImg = Form.useWatch("typeupload", formAddEditProduct);
 
     const handleChangeInputImage = (e: ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
@@ -99,7 +103,7 @@ export function AddEditProduct() {
             const draftDataUpdate = {
                 id: id,
                 name: values.name,
-                image: image,
+                image: typeuploadImg === "Upload" ? image : values.image,
                 description: values.description,
                 quantity: Number(values.quantity),
                 price: Number(values.price),
@@ -108,7 +112,12 @@ export function AddEditProduct() {
             };
             const draftDataCreate = {
                 name: values.name,
-                image: image ?? "",
+                image:
+                    typeuploadImg === "Upload"
+                        ? image
+                        : !image && !values.image
+                          ? ""
+                          : values.image,
                 description: values.description,
                 quantity: Number(values.quantity),
                 price: Number(values.price),
@@ -151,7 +160,7 @@ export function AddEditProduct() {
                 name="addeditproduct"
                 scrollToFirstError
                 style={{ paddingBlock: 32, width: "100%" }}
-                labelCol={{ span: 5 }}
+                labelCol={{ span: 10 }}
                 wrapperCol={{ span: 24 }}
                 initialValues={{ remember: true }}
                 onFinish={onFinish}
@@ -172,29 +181,57 @@ export function AddEditProduct() {
                         />
                     </Flex>
                 </Form.Item>
-                <Form.Item label={formLabel("Image")}>
-                    <ButtonConfig
-                        icon={<UploadOutlined />}
-                        iconPosition={"start"}
-                        onClick={handleButtonClick}
-                        lable={"Click to upload"}
-                    >
-                        <input
-                            style={{ display: "none" }}
-                            ref={fileInputRef}
-                            accept="image/*"
-                            type={"file"}
-                            onChange={handleChangeInputImage}
-                        />
-                    </ButtonConfig>
-                    {image && (
-                        <Image
-                            width={200}
-                            src={image}
-                            style={{ margin: "0 0 0 10px" }}
-                        />
-                    )}
-                </Form.Item>
+                <Row justify={"space-between"}>
+                    <Col span={15}>
+                        {typeuploadImg === "Upload" ? (
+                            <Form.Item label={formLabel("Image")}>
+                                <ButtonConfig
+                                    icon={<UploadOutlined />}
+                                    iconPosition={"start"}
+                                    onClick={handleButtonClick}
+                                    lable={"Click to upload"}
+                                >
+                                    <input
+                                        style={{ display: "none" }}
+                                        ref={fileInputRef}
+                                        accept="image/*"
+                                        type={"file"}
+                                        onChange={handleChangeInputImage}
+                                    />
+                                </ButtonConfig>
+                                {image && (
+                                    <Image
+                                        width={200}
+                                        src={image}
+                                        style={{ margin: "0 0 0 10px" }}
+                                    />
+                                )}
+                            </Form.Item>
+                        ) : (
+                            <Form.Item<FieldType>
+                                label={formLabel("Link URL Image")}
+                                name="image"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please input link URL!",
+                                    },
+                                ]}
+                            >
+                                <Input />
+                            </Form.Item>
+                        )}
+                    </Col>
+                    <Col span={7}>
+                        <Form.Item<FieldType>
+                            label={formLabel("Type Upload")}
+                            name={"typeupload"}
+                            initialValue={"Upload"}
+                        >
+                            <Select allowClear options={TYPESIMAGES} />
+                        </Form.Item>
+                    </Col>
+                </Row>
                 <Form.Item<FieldType>
                     label={formLabel("Name")}
                     name="name"
@@ -248,7 +285,6 @@ export function AddEditProduct() {
                     <Select
                         allowClear
                         style={{ width: "100%" }}
-                        placeholder="Select type"
                         options={TYPESPRODUCTS}
                     />
                 </Form.Item>

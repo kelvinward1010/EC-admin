@@ -24,3 +24,14 @@ export const TYPESPRODUCTS = [
         label: "Technologies",
     },
 ];
+
+export const TYPESIMAGES = [
+    {
+        value: "Upload",
+        label: "Upload",
+    },
+    {
+        value: "Link URL",
+        label: "Link URL",
+    },
+];
