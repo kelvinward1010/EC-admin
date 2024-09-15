@@ -5,6 +5,7 @@ import { convertToQueryString } from "@/utils/urls";
 import { useQuery } from "react-query";
 
 interface getUsersProps {
+    id?: string;
     name?: string;
     email?: string;
     isAdmin?: boolean;

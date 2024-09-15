@@ -110,6 +110,7 @@ function TableUser({ setUsersSelected }: TableUserProps) {
 
     const { data, isLoading } = useGetUsers({
         data: {
+            id: searchContent,
             name: searchContent,
             email: searchContent,
             page: pageIndex,

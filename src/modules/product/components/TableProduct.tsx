@@ -115,6 +115,7 @@ function TableProduct({ setUsersSelected }: TableProductProps) {
 
     const { data, isLoading } = useGetProducts({
         data: {
+            id: searchContent,
             name: searchContent,
             type: searchContent,
             page: pageIndex,

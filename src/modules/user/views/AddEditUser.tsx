@@ -108,7 +108,7 @@ export function AddEditUser() {
                 image:
                     image && typeuploadImg === "Upload"
                         ? image
-                        : values.image && typeuploadImg === "Link URL"
+                        : typeuploadImg === "Link URL"
                           ? values.image
                           : "",
                 isAdmin: values.isAdmin,

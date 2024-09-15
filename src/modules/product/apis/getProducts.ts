@@ -5,6 +5,7 @@ import { convertToQueryString } from "@/utils/urls";
 import { useQuery } from "react-query";
 
 interface getProductsProps {
+    id?: string;
     name?: string;
     type?: string;
     page?: number;

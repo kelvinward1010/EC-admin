@@ -1,4 +1,5 @@
 interface SearchProps {
+    id?: string;
     name?: string;
     type?: string;
     isAdmin?: boolean;
@@ -6,9 +7,12 @@ interface SearchProps {
 }
 
 export function convertToQueryString(props: SearchProps): string {
-    const { name, type, isAdmin, email } = props;
+    const { name, type, isAdmin, email, id } = props;
 
     const queryParams = [];
+    if (id) {
+        queryParams.push(`id=${encodeURIComponent(id)}`);
+    }
     if (name) {
         queryParams.push(`name=${encodeURIComponent(name)}`);
     }

@@ -103,7 +103,12 @@ export function AddEditProduct() {
             const draftDataUpdate = {
                 id: id,
                 name: values.name,
-                image: typeuploadImg === "Upload" ? image : values.image,
+                image:
+                    image && typeuploadImg === "Upload"
+                        ? image
+                        : typeuploadImg === "Link URL"
+                          ? values.image
+                          : "",
                 description: values.description,
                 quantity: Number(values.quantity),
                 price: Number(values.price),
@@ -143,6 +148,7 @@ export function AddEditProduct() {
                     onSuccess: (res) => {
                         formAddEditProduct.setFieldsValue(res?.data);
                         setAppreciationfromapi(res?.data?.appreciation);
+                        setImage(res?.data?.image);
                     },
                     onError: (e: any) => {
                         notification.error({
