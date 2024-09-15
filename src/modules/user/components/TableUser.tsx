@@ -35,7 +35,7 @@ function TableUser({ setUsersSelected }: TableUserProps) {
     const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
     const [user, setUser] = useState<IUser>();
     const pageIndex = Number(searchParams.get("pageIndex")) || 1;
-    const pageSize = Number(searchParams.get("pageSize")) || 20;
+    const pageSize = Number(searchParams.get("pageSize")) || 10;
     const searchContent = searchParams.get("searchContent") || "";
 
     const rowSelection: TableRowSelection<IUserTable> = {
@@ -111,6 +111,8 @@ function TableUser({ setUsersSelected }: TableUserProps) {
     const { data, isLoading } = useGetUsers({
         data: {
             name: searchContent,
+            email: searchContent,
+            page: pageIndex,
         },
         config: {},
     });
@@ -153,7 +155,7 @@ function TableUser({ setUsersSelected }: TableUserProps) {
                 onRow={(record) => ({
                     onDoubleClick: () => handleGoUser(record?.key),
                 })}
-                dataSource={addKeyField(data?.data) ?? []}
+                dataSource={addKeyField(data?.data?.items) ?? []}
                 sticky
                 size={"small"}
                 scroll={{
@@ -162,7 +164,7 @@ function TableUser({ setUsersSelected }: TableUserProps) {
                 }}
                 className={"tablemain table_all"}
                 pagination={{
-                    total: data?.data?.length,
+                    total: data?.data?.items?.length,
                     showSizeChanger: true,
                     showQuickJumper: true,
                     showTotal: (total) => `Total ${total} items`,

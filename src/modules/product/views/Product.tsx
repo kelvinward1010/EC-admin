@@ -36,11 +36,11 @@ export function Product() {
                 <Col span={10}>
                     <Text className={styles.label_main}>Product</Text>
                 </Col>
-                <Col span={4}>
+                <Col span={7}>
                     <Form>
                         <Input.Search
                             onChange={(e) => handleChangeSearch(e.target.value)}
-                            placeholder="Search"
+                            placeholder="Search name, type..."
                         />
                     </Form>
                 </Col>

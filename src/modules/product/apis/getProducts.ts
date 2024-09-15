@@ -1,16 +1,17 @@
 import { URL_GETPRODUCTS } from "@/constant";
 import { apiClient } from "@/lib/api";
 import { ExtractFnReturnType, QueryConfig } from "@/lib/react-query";
-import { convertToQueryStringUsers } from "@/utils/urls";
+import { convertToQueryString } from "@/utils/urls";
 import { useQuery } from "react-query";
 
 interface getProductsProps {
     name?: string;
     type?: string;
+    page?: number;
 }
 
 export const searchProducts = async (data: getProductsProps): Promise<any> => {
-    let convertedQuery = convertToQueryStringUsers(data);
+    let convertedQuery = convertToQueryString(data);
     const res = await apiClient.get(`${URL_GETPRODUCTS}${convertedQuery}`);
     return res?.data;
 };
@@ -27,7 +28,7 @@ export const useGetProducts = ({ data, config }: UseSearchProductsOptions) => {
         onError: () => {},
         onSuccess: () => {},
         ...config,
-        queryKey: ["get-products"],
+        queryKey: ["get-products", data],
         queryFn: () => searchProducts(data),
     });
 };

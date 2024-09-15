@@ -36,7 +36,7 @@ function TableProduct({ setUsersSelected }: TableProductProps) {
         useState<boolean>(false);
     const [product, setProduct] = useState<IProduct>();
     const pageIndex = Number(searchParams.get("pageIndex")) || 1;
-    const pageSize = Number(searchParams.get("pageSize")) || 20;
+    const pageSize = Number(searchParams.get("pageSize")) || 10;
     const searchContent = searchParams.get("searchContent") || "";
 
     const rowSelection: TableRowSelection<IProductTable> = {
@@ -116,6 +116,8 @@ function TableProduct({ setUsersSelected }: TableProductProps) {
     const { data, isLoading } = useGetProducts({
         data: {
             name: searchContent,
+            type: searchContent,
+            page: pageIndex,
         },
         config: {},
     });
@@ -158,7 +160,7 @@ function TableProduct({ setUsersSelected }: TableProductProps) {
                 onRow={(record) => ({
                     onDoubleClick: () => handleGoProduct(record?.key),
                 })}
-                dataSource={addKeyField(data?.data) ?? []}
+                dataSource={addKeyField(data?.data?.items) ?? []}
                 sticky
                 size={"small"}
                 scroll={{
@@ -167,13 +169,14 @@ function TableProduct({ setUsersSelected }: TableProductProps) {
                 }}
                 className={"tablemain table_all"}
                 pagination={{
-                    total: data?.data?.length,
+                    total: data?.data?.items?.length,
                     showSizeChanger: true,
                     showQuickJumper: true,
                     showTotal: (total) => `Total ${total} items`,
                     position: ["none", "bottomLeft"],
                     current: pageIndex,
                     pageSize,
+                    showTitle: true,
                     onChange: (page, pageSize) => {
                         searchParams.set("pageIndex", String(page));
                         searchParams.set("pageSize", String(pageSize));

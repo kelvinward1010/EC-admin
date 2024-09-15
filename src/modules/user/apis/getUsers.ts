@@ -1,17 +1,18 @@
 import { URL_GETUSERS } from "@/constant";
 import { apiClient } from "@/lib/api";
 import { ExtractFnReturnType, QueryConfig } from "@/lib/react-query";
-import { convertToQueryStringUsers } from "@/utils/urls";
+import { convertToQueryString } from "@/utils/urls";
 import { useQuery } from "react-query";
 
 interface getUsersProps {
     name?: string;
     email?: string;
     isAdmin?: boolean;
+    page?: number;
 }
 
 export const searchUsers = async (data: getUsersProps): Promise<any> => {
-    let convertedQuery = convertToQueryStringUsers(data);
+    let convertedQuery = convertToQueryString(data);
     const res = await apiClient.get(`${URL_GETUSERS}${convertedQuery}`);
     return res?.data;
 };
@@ -28,7 +29,7 @@ export const useGetUsers = ({ data, config }: UseSearchPostsOptions) => {
         onError: () => {},
         onSuccess: () => {},
         ...config,
-        queryKey: ["get-users"],
+        queryKey: ["get-users", data],
         queryFn: () => searchUsers(data),
     });
 };
