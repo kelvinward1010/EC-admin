@@ -1,20 +1,25 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import {
+    addOrderUrl,
     addProductUrl,
     addUserUrl,
+    editOrderUrl,
     editProductUrl,
     editUserUrl,
     layoutUrl,
+    orderUrl,
     productUrl,
     signinUrl,
     userUrl,
 } from "./urls";
 import { ErrorBoundaryPage } from "@/components/error/boundary-error";
 import {
+    AddEditOrder,
     AddEditProduct,
     AddEditUser,
     DashBoard,
     Layout,
+    Order,
     Product,
     SignIn,
     User,
@@ -79,6 +84,18 @@ export const routerConfig = createBrowserRouter([
             {
                 path: addProductUrl,
                 element: <AddEditProduct />,
+            },
+            {
+                path: orderUrl,
+                element: <Order />,
+            },
+            {
+                path: editOrderUrl,
+                element: <AddEditOrder />,
+            },
+            {
+                path: addOrderUrl,
+                element: <AddEditOrder />,
             },
         ],
     },

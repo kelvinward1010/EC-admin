@@ -34,3 +34,13 @@ export const AddEditProduct = lazyLoad(
     () => import("./product/views/AddEditProduct"),
     (module) => module.AddEditProduct,
 );
+
+export const Order = lazyLoad(
+    () => import("./order/views/Order"),
+    (module) => module.Order,
+);
+
+export const AddEditOrder = lazyLoad(
+    () => import("./order/views/AddEditOrder"),
+    (module) => module.AddEditOrder,
+);

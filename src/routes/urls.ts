@@ -10,3 +10,7 @@ export const editUserUrl = `${userUrl}/:id`;
 export const productUrl = "/product";
 export const addProductUrl = `${productUrl}/add-new`;
 export const editProductUrl = `${productUrl}/:id`;
+
+export const orderUrl = "/order";
+export const addOrderUrl = `${productUrl}/add-new`;
+export const editOrderUrl = `${productUrl}/:id`;

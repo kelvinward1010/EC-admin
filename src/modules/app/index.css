@@ -12,3 +12,7 @@
     .ant-page-header-heading {
     display: none;
 }
+
+.ant-layout-sider {
+    background: rgb(223, 223, 223) !important;
+}

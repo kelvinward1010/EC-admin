@@ -1,9 +1,10 @@
+import { layoutUrl, orderUrl, productUrl, userUrl } from "@/routes/urls";
 import {
-    layoutUrl,
-    productUrl,
-    userUrl,
-} from "@/routes/urls";
-import { HomeFilled, ProductFilled, UsergroupAddOutlined } from "@ant-design/icons";
+    HomeFilled,
+    OrderedListOutlined,
+    ProductFilled,
+    UsergroupAddOutlined,
+} from "@ant-design/icons";
 
 export const defaultMenus = [
     {
@@ -20,5 +21,10 @@ export const defaultMenus = [
         path: productUrl,
         name: "Product",
         icon: <ProductFilled />,
+    },
+    {
+        path: orderUrl,
+        name: "Order",
+        icon: <OrderedListOutlined />,
     },
 ];

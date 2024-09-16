@@ -21,3 +21,11 @@ export const URL_CREATEPRODUCT = `${URL_PRODUCT}/create`;
 export const URL_GETPRODUCT = `${URL_PRODUCT}/detail`;
 export const URL_UPDATEPRODUCT = `${URL_PRODUCT}/update`;
 export const URL_DELETEPRODUCT = `${URL_PRODUCT}/delete`;
+
+//ORDER
+export const URL_ORDER = "order";
+export const URL_GETORDERS = `${URL_ORDER}/search`;
+export const URL_CREATEORDER = `${URL_ORDER}/create`;
+export const URL_GETORDER = `${URL_ORDER}/detail`;
+export const URL_UPDATEORDER = `${URL_ORDER}/update`;
+export const URL_DELETEORDER = `${URL_ORDER}/delete`;
