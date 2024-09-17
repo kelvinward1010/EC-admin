@@ -1,25 +1,10 @@
-import {
-    Image,
-    notification,
-    Row,
-    Table,
-    TableColumnsType,
-    Typography,
-} from "antd";
-import styles from "./TableProduct.module.scss";
+import { Image, Table, TableColumnsType, Typography } from "antd";
 import { TableProps } from "antd/lib";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { productUrl } from "@/routes/urls";
-import { IProductTable } from "../types";
-import { useGetProducts } from "../apis/getProducts";
 import { addKeyField } from "@/utils/data";
-import { ButtonConfig } from "@/components/buttonconfig";
-import { DeleteFilled, EditFilled } from "@ant-design/icons";
-import { useState } from "react";
-import { IProduct } from "@/types/product";
-import { ModalSmall } from "@/components/modals/modalSmall";
-import { useDeleteProduct } from "../apis/deleteProduct";
-import { queryClient } from "@/lib/react-query";
+import { IProductTable } from "@/modules/product/types";
+import { useGetProducts } from "@/modules/product/apis/getProducts";
 
 const { Text } = Typography;
 
@@ -29,12 +14,9 @@ interface TableProductProps {
     setProductsSelected: (vl: IProductTable[]) => void;
 }
 
-function TableProduct({ setProductsSelected }: TableProductProps) {
+function TableProductInOrder({ setProductsSelected }: TableProductProps) {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [openModalDeleteProduct, setOpenModalDeleteProduct] =
-        useState<boolean>(false);
-    const [product, setProduct] = useState<IProduct>();
     const pageIndex = Number(searchParams.get("pageIndex")) || 1;
     const pageSize = Number(searchParams.get("pageSize")) || 10;
     const searchContent = searchParams.get("searchContent") || "";
@@ -90,27 +72,6 @@ function TableProduct({ setProductsSelected }: TableProductProps) {
             title: "Type",
             dataIndex: "type",
         },
-        {
-            title: "Actions",
-            width: "10%",
-            render: (_: any, record: any) => {
-                return (
-                    <Row justify={"space-evenly"} key={record?._id}>
-                        <ButtonConfig
-                            icon={<EditFilled />}
-                            onClick={() => handleGoProduct(record?._id)}
-                        />
-                        <ButtonConfig
-                            icon={<DeleteFilled />}
-                            onClick={() => {
-                                setProduct(record);
-                                setOpenModalDeleteProduct(true);
-                            }}
-                        />
-                    </Row>
-                );
-            },
-        },
     ];
 
     const { data, isLoading } = useGetProducts({
@@ -123,38 +84,8 @@ function TableProduct({ setProductsSelected }: TableProductProps) {
         config: {},
     });
 
-    const configDeleteUser = useDeleteProduct({
-        config: {
-            onSuccess: () => {
-                notification.error({
-                    message: "Deleted product",
-                });
-                queryClient.invalidateQueries(["get-products"]);
-                setOpenModalDeleteProduct(false);
-            },
-            onError: (e) => {
-                notification.error({
-                    message: e?.response?.data?.detail,
-                });
-            },
-        },
-    });
-
-    const handleDeleteProduct = () => {
-        configDeleteUser.mutate({ id: product?._id });
-    };
-
     return (
-        <div className={styles.container}>
-            {openModalDeleteProduct && product?._id && (
-                <ModalSmall
-                    message={`Do you want to delete ${product?.name} !`}
-                    open={openModalDeleteProduct}
-                    setOpen={setOpenModalDeleteProduct}
-                    onClick={handleDeleteProduct}
-                    titleButton={"Delete"}
-                />
-            )}
+        <div>
             <Table
                 rowSelection={rowSelection}
                 columns={columns}
@@ -190,4 +121,4 @@ function TableProduct({ setProductsSelected }: TableProductProps) {
     );
 }
 
-export default TableProduct;
+export default TableProductInOrder;

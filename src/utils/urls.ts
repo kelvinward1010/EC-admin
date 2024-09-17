@@ -1,13 +1,17 @@
 interface SearchProps {
     id?: string;
     name?: string;
+    idUser?: string;
     type?: string;
     isAdmin?: boolean;
-    email?: string;
+    nameOrder?: string;
+    status?: string;
+    completed?: boolean;
 }
 
 export function convertToQueryString(props: SearchProps): string {
-    const { name, type, isAdmin, email, id } = props;
+    const { name, type, isAdmin, nameOrder, id, idUser, status, completed } =
+        props;
 
     const queryParams = [];
     if (id) {
@@ -16,11 +20,20 @@ export function convertToQueryString(props: SearchProps): string {
     if (name) {
         queryParams.push(`name=${encodeURIComponent(name)}`);
     }
-    if (email) {
-        queryParams.push(`email=${encodeURIComponent(email)}`);
+    if (nameOrder) {
+        queryParams.push(`nameOrder=${encodeURIComponent(nameOrder)}`);
     }
     if (type) {
         queryParams.push(`type=${encodeURIComponent(type)}`);
+    }
+    if (idUser) {
+        queryParams.push(`idUser=${encodeURIComponent(idUser)}`);
+    }
+    if (status) {
+        queryParams.push(`status=${encodeURIComponent(status)}`);
+    }
+    if (completed !== undefined) {
+        queryParams.push(`completed=${encodeURIComponent(completed)}`);
     }
     if (isAdmin !== undefined) {
         queryParams.push(`isAdmin=${isAdmin}`);

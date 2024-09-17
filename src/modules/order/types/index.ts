@@ -5,15 +5,16 @@ export interface IOrderTable {
     idUser: string;
     deliveryaddress: {
         name: string;
+        email: string;
         phone: string;
         address: string;
     };
     products?: [
         {
+            key: string;
             _id: string;
             name: string;
             image: string;
-            description: string;
             quantity: number;
             price: number;
             star: number;
@@ -27,6 +28,5 @@ export interface IOrderTable {
     };
     status: string;
     completed: boolean;
-    paidAt: string;
     deliveredAt: string;
 }

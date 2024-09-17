@@ -12,7 +12,9 @@ const { Text } = Typography;
 export function Product() {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [usersSelected, setUsersSelected] = useState<IProductTable[]>([]);
+    const [productsSelected, setProductsSelected] = useState<IProductTable[]>(
+        [],
+    );
     const timeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const goAddNewProduct = () => navigate(addProductUrl);
@@ -50,10 +52,10 @@ export function Product() {
                     <ButtonConfig lable={"Add"} onClick={goAddNewProduct} />
                     <ButtonConfig
                         lable={"Delete"}
-                        className={`${usersSelected ? styles.deleted : styles.notdelected}`}
+                        className={`${productsSelected ? styles.deleted : styles.notdelected}`}
                     />
                 </Flex>
-                <TableProduct setUsersSelected={setUsersSelected} />
+                <TableProduct setProductsSelected={setProductsSelected} />
             </div>
         </div>
     );

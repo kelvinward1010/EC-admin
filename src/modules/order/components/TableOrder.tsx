@@ -2,7 +2,6 @@ import { notification, Row, Table, TableColumnsType, Typography } from "antd";
 import styles from "./TableOrder.module.scss";
 import { TableProps } from "antd/lib";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { userUrl } from "@/routes/urls";
 import { ButtonConfig } from "@/components/buttonconfig";
 import { DeleteFilled, EditFilled } from "@ant-design/icons";
 import { useState } from "react";
@@ -13,15 +12,24 @@ import { addKeyField } from "@/utils/data";
 import { useDeleteOrder } from "../apis/deleteOrder";
 import { queryClient } from "@/lib/react-query";
 import { ModalSmall } from "@/components/modals/modalSmall";
+import { orderUrl } from "../../../routes/urls";
 const { Text } = Typography;
 
 type TableRowSelection<T> = TableProps<T>["rowSelection"];
 
 interface TableOrderProps {
     setOrdersSelected: (vl: IOrderTable[]) => void;
+    typeSearch: number;
+    statusValue: string;
+    completedValue: boolean;
 }
 
-function TableOrder({ setOrdersSelected }: TableOrderProps) {
+function TableOrder({
+    setOrdersSelected,
+    typeSearch,
+    statusValue,
+    completedValue,
+}: TableOrderProps) {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
@@ -38,7 +46,7 @@ function TableOrder({ setOrdersSelected }: TableOrderProps) {
     };
 
     const handleGoUser = (id: string) => {
-        navigate(`${userUrl}/${id}`);
+        navigate(`${orderUrl}/${id}`);
     };
 
     const columns: TableColumnsType<IOrderTable> = [
@@ -52,6 +60,11 @@ function TableOrder({ setOrdersSelected }: TableOrderProps) {
             title: "ID",
             dataIndex: "_id",
             width: "18%",
+        },
+        {
+            title: "Name",
+            dataIndex: "name",
+            width: "auto",
         },
         {
             title: "Payment Method",
@@ -98,11 +111,11 @@ function TableOrder({ setOrdersSelected }: TableOrderProps) {
 
     const { data, isLoading } = useGetOrders({
         data: {
-            id: searchContent,
-            idUser: searchContent,
-            name: searchContent,
-            phone: searchContent,
-            address: searchContent,
+            id: searchContent && typeSearch === 2 ? searchContent : "",
+            idUser: searchContent && typeSearch === 1 ? searchContent : "",
+            nameOrder: searchContent && typeSearch === 1 ? searchContent : "",
+            completed: completedValue === false ? false : true,
+            status: statusValue,
         },
         config: {},
     });

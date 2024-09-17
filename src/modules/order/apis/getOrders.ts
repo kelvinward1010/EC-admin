@@ -9,9 +9,7 @@ interface getOrdersProps {
     status?: string;
     completed?: boolean;
     idUser?: string;
-    name?: string;
-    phone?: string;
-    address?: string;
+    nameOrder?: string;
 }
 
 export const searchOrders = async (data: getOrdersProps): Promise<any> => {

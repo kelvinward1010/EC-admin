@@ -1,0 +1,15 @@
+.containerinformlist {
+    margin: 10px 0;
+    height: auto;
+    max-height: 700px;
+    border: 1px solid teal;
+    padding: 5px;
+    border-radius: 5px;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    .iteminlist {
+        margin-top: 5px;
+        border-top: 1px solid teal;
+    }
+}

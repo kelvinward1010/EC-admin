@@ -4,15 +4,16 @@ export interface IOrder {
     idUser: string;
     deliveryaddress: {
         name: string;
+        email: string;
         phone: string;
         address: string;
     };
     products?: [
         {
+            key: string;
             _id: string;
             name: string;
             image: string;
-            description: string;
             quantity: number;
             price: number;
             star: number;
@@ -26,7 +27,6 @@ export interface IOrder {
     };
     status: string;
     completed: boolean;
-    paidAt: string;
     deliveredAt: string;
     createdAt: string;
     updatedAt: string;

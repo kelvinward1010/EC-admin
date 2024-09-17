@@ -12,5 +12,5 @@ export const addProductUrl = `${productUrl}/add-new`;
 export const editProductUrl = `${productUrl}/:id`;
 
 export const orderUrl = "/order";
-export const addOrderUrl = `${productUrl}/add-new`;
-export const editOrderUrl = `${productUrl}/:id`;
+export const addOrderUrl = `${orderUrl}/add-new`;
+export const editOrderUrl = `${orderUrl}/:id`;
