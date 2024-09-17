@@ -45,7 +45,7 @@ function TableOrder({
         onSelectAll: (_, __, ___) => {},
     };
 
-    const handleGoUser = (id: string) => {
+    const handleGoOrder = (id: string) => {
         navigate(`${orderUrl}/${id}`);
     };
 
@@ -94,7 +94,7 @@ function TableOrder({
                     <Row justify={"space-evenly"} key={record?._id}>
                         <ButtonConfig
                             icon={<EditFilled />}
-                            onClick={() => handleGoUser(record?._id)}
+                            onClick={() => handleGoOrder(record?._id)}
                         />
                         <ButtonConfig
                             icon={<DeleteFilled />}
@@ -114,7 +114,12 @@ function TableOrder({
             id: searchContent && typeSearch === 2 ? searchContent : "",
             idUser: searchContent && typeSearch === 1 ? searchContent : "",
             nameOrder: searchContent && typeSearch === 1 ? searchContent : "",
-            completed: completedValue === false ? false : true,
+            completed:
+                completedValue === false
+                    ? false
+                    : completedValue === true
+                      ? true
+                      : undefined,
             status: statusValue,
         },
         config: {},
@@ -156,7 +161,7 @@ function TableOrder({
                 rowSelection={rowSelection}
                 columns={columns}
                 onRow={(record) => ({
-                    onDoubleClick: () => handleGoUser(record?.key),
+                    onDoubleClick: () => handleGoOrder(record?.key),
                 })}
                 dataSource={addKeyField(data?.data?.items) ?? []}
                 sticky

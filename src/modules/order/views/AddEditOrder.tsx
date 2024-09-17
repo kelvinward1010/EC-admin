@@ -5,6 +5,7 @@ import {
     Image,
     Input,
     Modal,
+    notification,
     Radio,
     Row,
     Select,
@@ -17,6 +18,13 @@ import { PAYMENTMETHODS, STATUSORDER } from "@/constant/config";
 import { IProductTable } from "@/modules/product/types";
 import TableProductInOrder from "../components/TableProduct";
 import { DeleteOutlined } from "@ant-design/icons";
+import { queryClient } from "@/lib/react-query";
+import { useNavigate, useParams } from "react-router-dom";
+import { orderUrl } from "@/routes/urls";
+import { IProductInOrder, mapProductsInOrders } from "@/utils/data";
+import { useCreateOrder } from "../apis/createOrder";
+import { useGetOrder } from "../apis/getOrder";
+import { useUpdateOrder } from "../apis/updateOrder";
 
 const { Text } = Typography;
 
@@ -45,12 +53,14 @@ interface FormProductInOrderProps {
 }
 
 export function AddEditOrder() {
+    const navigate = useNavigate();
     const [formAddEditOrder] = Form.useForm();
     const [openModalAddProducts, setOpenModalAddProducts] =
         useState<boolean>(false);
     const [productsSelected, setProductsSelected] = useState<IProductTable[]>(
         [],
     );
+    const id = useParams()?.id;
     const formLabel = (value: string) => <Text strong>{value}</Text>;
 
     const handleResetAll = () => {
@@ -98,9 +108,120 @@ export function AddEditOrder() {
         );
     }
 
-    const onFinish = useCallback((values: FieldType) => {
-        console.log(values);
-    }, []);
+    const configCreateOrder = useCreateOrder({
+        config: {
+            onSuccess: () => {
+                notification.success({
+                    message: "Created order",
+                });
+                queryClient.invalidateQueries(["get-orders"]);
+                navigate(orderUrl);
+            },
+            onError: (e) => {
+                notification.error({
+                    message: e?.message,
+                });
+            },
+        },
+    });
+
+    const configUpdateOrder = useUpdateOrder({
+        config: {
+            onSuccess: () => {
+                notification.success({
+                    message: "Updated order",
+                });
+                queryClient.invalidateQueries(["get-orders"]);
+                navigate(orderUrl);
+            },
+            onError: (e) => {
+                notification.error({
+                    message: e?.message,
+                });
+            },
+        },
+    });
+
+    const onFinish = useCallback(
+        (values: FieldType) => {
+            const draftDataCreate = {
+                name: values.name,
+                paymentmethod: values.paymentmethod,
+                idUser: values.idUser,
+                deliveryaddress: {
+                    name: values.deliveryaddress.name,
+                    email: values.deliveryaddress.email,
+                    phone: values.deliveryaddress.phone,
+                    address: values.deliveryaddress.address,
+                },
+                products: productsSelected
+                    ? (mapProductsInOrders(
+                          productsSelected,
+                      ) as IProductInOrder[])
+                    : [],
+                yourinvoice: {
+                    price: values.yourinvoice.price,
+                    shipping_price: values.yourinvoice.shipping_price,
+                    totalprice: values.yourinvoice.totalprice,
+                },
+                status: values.status,
+                completed: values.completed,
+                deliveredAt: "",
+            };
+            const draftDataUpdate = {
+                id: id,
+                name: values.name,
+                paymentmethod: values.paymentmethod,
+                idUser: values.idUser,
+                deliveryaddress: {
+                    name: values.deliveryaddress.name,
+                    email: values.deliveryaddress.email,
+                    phone: values.deliveryaddress.phone,
+                    address: values.deliveryaddress.address,
+                },
+                products: productsSelected
+                    ? (mapProductsInOrders(
+                          productsSelected,
+                      ) as IProductInOrder[])
+                    : [],
+                yourinvoice: {
+                    price: values.yourinvoice.price,
+                    shipping_price: values.yourinvoice.shipping_price,
+                    totalprice: values.yourinvoice.totalprice,
+                },
+                status: values.status,
+                completed: values.completed,
+                deliveredAt: "",
+            };
+            if (id) {
+                configUpdateOrder.mutate(draftDataUpdate);
+            } else {
+                configCreateOrder.mutate(draftDataCreate);
+            }
+        },
+        [productsSelected],
+    );
+
+    {
+        id &&
+            useGetOrder({
+                data: {
+                    id: id,
+                },
+                config: {
+                    onSuccess: (res) => {
+                        formAddEditOrder.setFieldsValue(res?.data);
+                        setProductsSelected(res?.data?.products);
+                        console.log(res);
+                    },
+                    onError: (e: any) => {
+                        notification.error({
+                            message: e?.response?.data?.detail,
+                        });
+                    },
+                },
+            });
+    }
 
     return (
         <div className={styles.container}>

@@ -13,6 +13,6 @@ export interface IProductTable {
             idUser: string;
         },
     ];
-    createdAt: string;
-    updatedAt: string;
+    createdAt?: string;
+    updatedAt?: string;
 }

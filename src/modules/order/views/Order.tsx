@@ -59,7 +59,7 @@ export function Order() {
                 layout={"vertical"}
             >
                 <Row justify={"end"} align={"top"}>
-                    <Col span={12}>
+                    <Col span={15}>
                         <Form.Item<FieldType>
                             label={formLabel("Status")}
                             name={"status"}
@@ -94,6 +94,10 @@ export function Order() {
                                 placeholder="Search name order, idUser, id..."
                             />
                         </Form.Item>
+                        <ButtonConfig
+                            onClick={() => formsearchorder.resetFields()}
+                            lable={"Clear search"}
+                        />
                     </Col>
                 </Row>
             </Form>
