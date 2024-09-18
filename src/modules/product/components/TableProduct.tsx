@@ -77,6 +77,13 @@ function TableProduct({ setProductsSelected }: TableProductProps) {
         {
             title: "Desciption",
             dataIndex: "description",
+            render: (_: any, record: any) => {
+                return (
+                    <Text className={styles.textdescription}>
+                        {record?.description}
+                    </Text>
+                );
+            },
         },
         {
             title: "Quantity",
