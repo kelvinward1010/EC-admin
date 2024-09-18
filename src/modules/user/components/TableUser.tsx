@@ -27,9 +27,10 @@ type TableRowSelection<T> = TableProps<T>["rowSelection"];
 
 interface TableUserProps {
     setUsersSelected: (vl: IUserTable[]) => void;
+    typeSearch: number;
 }
 
-function TableUser({ setUsersSelected }: TableUserProps) {
+function TableUser({ setUsersSelected, typeSearch }: TableUserProps) {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
@@ -110,9 +111,9 @@ function TableUser({ setUsersSelected }: TableUserProps) {
 
     const { data, isLoading } = useGetUsers({
         data: {
-            id: searchContent,
-            name: searchContent,
-            email: searchContent,
+            id: searchContent && typeSearch === 2 ? searchContent : "",
+            name: searchContent && typeSearch === 1 ? searchContent : "",
+            email: searchContent && typeSearch === 1 ? searchContent : "",
             page: pageIndex,
         },
         config: {},

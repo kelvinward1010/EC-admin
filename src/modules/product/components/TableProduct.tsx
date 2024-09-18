@@ -27,9 +27,10 @@ type TableRowSelection<T> = TableProps<T>["rowSelection"];
 
 interface TableProductProps {
     setProductsSelected: (vl: IProductTable[]) => void;
+    typeSearch: number;
 }
 
-function TableProduct({ setProductsSelected }: TableProductProps) {
+function TableProduct({ setProductsSelected, typeSearch }: TableProductProps) {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const [openModalDeleteProduct, setOpenModalDeleteProduct] =
@@ -122,9 +123,9 @@ function TableProduct({ setProductsSelected }: TableProductProps) {
 
     const { data, isLoading } = useGetProducts({
         data: {
-            id: searchContent,
-            name: searchContent,
-            type: searchContent,
+            id: searchContent && typeSearch === 2 ? searchContent : "",
+            name: searchContent && typeSearch === 1 ? searchContent : "",
+            type: searchContent && typeSearch === 1 ? searchContent : "",
             page: pageIndex,
         },
         config: {},

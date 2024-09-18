@@ -82,10 +82,8 @@ export function Order() {
                         </Form.Item>
                         <Form.Item label={formLabel("Search")}>
                             <Radio.Group onChange={onChange} value={typeSearch}>
-                                <Radio value={1}>
-                                    Search name order, idUser
-                                </Radio>
-                                <Radio value={2}>Search ID</Radio>
+                                <Radio value={1}>name order, idUser</Radio>
+                                <Radio value={2}>ID</Radio>
                             </Radio.Group>
                             <Input.Search
                                 onChange={(e) =>
