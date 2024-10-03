@@ -40,7 +40,7 @@ export function User() {
 
     return (
         <div className={styles.container}>
-            <Row justify={"space-between"} align={"middle"}>
+            <Row justify={"space-between"} align={"top"}>
                 <Col span={10}>
                     <Text className={styles.label_main}>User</Text>
                 </Col>

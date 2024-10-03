@@ -166,7 +166,7 @@ function TableUser({ setUsersSelected, typeSearch }: TableUserProps) {
                 }}
                 className={"tablemain table_all"}
                 pagination={{
-                    total: data?.data?.items?.length,
+                    total: data?.data?.items?.length ?? 0,
                     showSizeChanger: true,
                     showQuickJumper: true,
                     showTotal: (total) => `Total ${total} items`,

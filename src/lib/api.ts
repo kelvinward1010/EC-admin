@@ -10,7 +10,7 @@ export const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
     function (config) {
-        config.headers.Authorization = "Bearer " + storage.getToken();
+        config.headers.Authorization = "Bearer " + storage?.getToken();
         return config;
     },
     function (error) {
